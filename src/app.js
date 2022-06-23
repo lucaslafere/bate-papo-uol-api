@@ -18,19 +18,20 @@ let db;
 app.post('/participants', async (req, res) => {
     const username = req.body.name;
     try {
-        mongoClient.connect()
+        await mongoClient.connect();
         const databaseUol = mongoClient.db("api-uol");
         const collectionParticipants = databaseUol.collection("participants");
         if (!username) {
             res.status(422).send("Preencha o campo de usuário");
-            return
+            return;
         }
         await collectionParticipants.insertOne({name: username});
         res.status(200);
-        return
+        return;
+
     } catch (error) {
-        console.error(error)
-        res.send(error)
+        res.status(500).send(error);
+        return;
     }
 })
 
