@@ -4,15 +4,11 @@ import express, { json } from 'express';
 import cors from 'cors';
 
 dotenv.config();
-
 const app = express();
 app.use(cors());
 app.use(json());
 
 const mongoClient = new MongoClient(process.env.MONGO_URI);
-
-
-let db;
 
 //incompleto
 app.post('/participants', async (req, res) => {
@@ -26,7 +22,7 @@ app.post('/participants', async (req, res) => {
             return;
         }
         await collectionParticipants.insertOne({name: username});
-        res.status(200);
+        res.sendStatus(200);
         return;
 
     } catch (error) {
