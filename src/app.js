@@ -29,7 +29,7 @@ app.post('/participants', async (req, res) => {
 
 
     } catch (error) {
-
+        console.error(error)
     }
 })
 
