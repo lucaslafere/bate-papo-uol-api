@@ -22,14 +22,15 @@ app.post('/participants', async (req, res) => {
         const databaseUol = mongoClient.db("api-uol");
         const collectionParticipants = databaseUol.collection("participants");
         if (!username) {
-            res.status(422).send("Preencha o campo de usuário")
+            res.status(422).send("Preencha o campo de usuário");
             return
         }
-        await collectionParticipants.insertOne({name: username})
-
-
+        await collectionParticipants.insertOne({name: username});
+        res.status(200);
+        return
     } catch (error) {
         console.error(error)
+        res.send(error)
     }
 })
 
