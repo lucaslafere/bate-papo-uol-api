@@ -165,6 +165,30 @@ app.post('/status', async (req, res) => {
     }
 })
 
+async function deleteParticipants () {
+    let participants;
+    const currentDate = Date.now();
+    const tenSecondsInMs = 10000
+    try {
+        await mongoClient.connect();
+        db = mongoClient.db("api-uol");
+        const collectionParticipants = db.collection("participants");
+        const collectionRoomMessage = db.collection("roomMessage");
+        participants = await collectionParticipants.find().toArray();
+        for (let i = 0; i < participants.length; i++){
+            if (participants[i].lastStatus + tenSecondsInMs < currentDate) {
+                collectionParticipants.deleteOne({lastStatus: participants[i].lastStatus})
+                await collectionRoomMessage.insertOne({from: participants[i].name, to: 'Todos', text: 'sai da sala...', type: 'status', time: dayjs().format('HH:mm:ss')})
+            }
+        }
+    } catch (error) {
+        res.status(500).send(error);
+        return;
+    }
+}
+
+setInterval(deleteParticipants, 15000);
+
 app.listen(process.env.PORT, () => {
     console.log(`Servidor rodando na porta ${process.env.PORT}`)
 }) 
