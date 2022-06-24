@@ -110,15 +110,17 @@ app.get('/messages', async (req, res) => {
     const limit = parseInt(req.query.limit);
     const user = req.headers.user;
 
+    if (!req.headers.user) {
+        res.sendStatus(422);
+        return;
+    }
+
     try {
         await mongoClient.connect();
         db = mongoClient.db("api-uol");
         const collectionRoomMessage = db.collection("roomMessage");
         
-    if (!req.headers.user) {
-        res.sendStatus(422);
-        return;
-    }
+    
     if (!req.query.limit) {
         messages = await collectionRoomMessage.find({  $or : [ {"from" : user}, {"to" : user}, {"type" : "message"}, {"type" : "status"} ] } ).toArray();
         res.status(200).send(messages);
@@ -136,8 +138,26 @@ app.get('/messages', async (req, res) => {
 })
 
 app.post('/status', async (req, res) => {
+    const user = req.headers.user;
+
+    if (!req.headers.user) {
+        res.sendStatus(422);
+        return;
+    }
     try {
         await mongoClient.connect();
+        db = mongoClient.db("api-uol");
+        const collectionParticipants = db.collection("participants");
+        const checkSameUser = await collectionParticipants.findOne({name: user});
+        if (!checkSameUser) {
+            res.status(404).send(`O usuário ${user} não foi encontrado`);
+            return;
+        }
+        await collectionParticipants.updateOne({
+            name: user
+        }, { $set: {lastStatus: Date.now()}});
+        res.status(200).send("funcionou");
+        return;
 
     } catch (error) {
         res.status(500).send(error);
