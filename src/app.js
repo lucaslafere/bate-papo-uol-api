@@ -29,7 +29,7 @@ app.post('/participants', async (req, res) => {
         await mongoClient.connect();
         db = mongoClient.db("api-uol");
         const collectionParticipants = db.collection("participants");
-        const collectionRoomStatusMessage = db.collection("roomStatusMessage");
+        const collectionRoomMessage = db.collection("roomMessage");
         const checkSameUser = await collectionParticipants.findOne(username);
 
         if (checkSameUser) {
@@ -38,7 +38,7 @@ app.post('/participants', async (req, res) => {
         }
 
         await collectionParticipants.insertOne({name: username.name, lastStatus: Date.now()});
-        await collectionRoomStatusMessage.insertOne({from: username.name, to: 'Todos', text: 'entra na sala...', type: 'status', time: dayjs().format('HH:mm:ss')})
+        await collectionRoomMessage.insertOne({from: username.name, to: 'Todos', text: 'entra na sala...', type: 'status', time: dayjs().format('HH:mm:ss')})
         res.sendStatus(201);
         return;
 
