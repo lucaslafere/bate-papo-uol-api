@@ -122,7 +122,7 @@ app.get('/messages', async (req, res) => {
         
     
     if (!req.query.limit) {
-        messages = await collectionRoomMessage.find({  $or : [ {"from" : user}, {"to" : user}, {"type" : "message"}, {"type" : "status"} ] } ).toArray();
+        messages = await collectionRoomMessage.find({  $or : [ {"from" : user}, {"to" : user}, {"to" : 'Todos'} ] } ).toArray();
         res.status(200).send(messages);
         return;
     }
