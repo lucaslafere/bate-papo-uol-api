@@ -107,6 +107,7 @@ app.post('/messages', async (req, res) => {
 
 app.get('/messages', async (req, res) => {
     let messages;
+    let lastMessages;
     const limit = parseInt(req.query.limit);
     const user = req.headers.user;
 
@@ -127,7 +128,8 @@ app.get('/messages', async (req, res) => {
         return;
     }
         messages = await collectionRoomMessage.find({  $or : [ {"from" : user}, {"to" : user}, {"type" : "message"} ] } ).limit(limit).toArray();
-        res.status(200).send(messages);
+        lastMessages = messages.slice(-limit);
+        res.status(200).send(lastMessages);
         return;
 
 
